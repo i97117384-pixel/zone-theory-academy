@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zone Theory Academy — Master the Market Structure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============ RESET & TOKENS ============ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --bg-void:    #05070d;
+    --bg-deep:    #0a0e1a;
+    --bg-card:    #0f1421;
+    --bg-raised:  #141926;
+    --bg-hover:   #1a2133;
+    --border:     #1e2a3d;
+    --border-lit: #2a3a55;
+    
+    --gold:       #f0b429;
+    --gold-dim:   #c48f14;
+    --gold-glow:  rgba(240,180,41,0.15);
+    --gold-pale:  rgba(240,180,41,0.07);
+    
+    --green:      #10b981;
+    --green-dim:  rgba(16,185,129,0.15);
+    --red:        #ef4444;
+    --red-dim:    rgba(239,68,68,0.15);
+    --blue:       #3b82f6;
+    
+    --text-primary:   #f0f4ff;
+    --text-secondary: #8899bb;
+    --text-muted:     #4a5878;
+    --text-mono:      #a8bdd8;
+    
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body:    'Inter', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+    
+    --radius-sm:  6px;
+    --radius-md:  12px;
+    --radius-lg:  20px;
+    --radius-xl:  28px;
+    
+    --shadow-card: 0 4px 24px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3);
+    --shadow-gold: 0 0 40px rgba(240,180,41,0.2), 0 0 80px rgba(240,180,41,0.08);
+    --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-void);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ============ SCROLLBAR ============ */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--border-lit); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+  /* ============ NAVBAR ============ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(5,7,13,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nav-logo-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--gold);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color var(--transition);
+  }
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-cta {
+    background: var(--gold);
+    color: #000 !important;
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    transition: background var(--transition), box-shadow var(--transition) !important;
+  }
+  .nav-cta:hover { background: #ffc93d !important; box-shadow: var(--shadow-gold) !important; }
+
+  /* ============ HERO ============ */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 100px 2rem 80px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(30,42,61,0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,42,61,0.35) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 40%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(240,180,41,0.07) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+
+  /* ── TICKER TAPE (signature element) ── */
+  .ticker-wrap {
+    width: 100%; overflow: hidden;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .ticker-track {
+    display: flex; gap: 60px;
+    animation: tickerScroll 30s linear infinite;
+    width: max-content;
+  }
+  .ticker-track:hover { animation-play-state: paused; }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--font-mono); font-size: 0.78rem;
+    white-space: nowrap;
+  }
+  .ticker-pair { color: var(--text-secondary); font-weight: 500; }
+  .ticker-price { color: var(--text-primary); font-weight: 500; }
+  .ticker-chg.up   { color: var(--green); }
+  .ticker-chg.down { color: var(--red); }
+  .ticker-sep { color: var(--border-lit); }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    position: relative; z-index: 1;
+  }
+  .hero-title .accent {
+    color: var(--gold);
+    position: relative;
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    position: relative; z-index: 1;
+  }
+  .hero-actions {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    position: relative; z-index: 1;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: #000;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  }
+  .btn-primary:hover {
+    background: #ffc93d;
+    box-shadow: var(--shadow-gold);
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 13px 28px;
+    border: 1px solid var(--border-lit);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: border-color var(--transition), background var(--transition);
+  }
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+  }
+
+  /* hero stats */
+  .hero-stats {
+    display: flex; gap: 48px; justify-content: center; flex-wrap: wrap;
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    width: 100%; max-width: 600px;
+    position: relative; z-index: 1;
+  }
+  .stat-item { text-align: center; }
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-lbl {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+
+  /* ============ SECTION COMMON ============ */
+  section { padding: 100px 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    line-height: 1.15;
+  }
+  .section-sub {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    max-width: 520px;
+    line-height: 1.7;
+  }
+  .section-header { margin-bottom: 56px; }
+
+  /* ============ HOW IT WORKS ============ */
+  #how { background: var(--bg-deep); }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .step-card {
+    background: var(--bg-card);
+    padding: 36px 28px;
+    position: relative;
+    transition: background var(--transition);
+  }
+  .step-card:hover { background: var(--bg-raised); }
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .step-icon {
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .step-card h3 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .step-card p { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.65; }
+
+  /* ============ LEVELS OVERVIEW ============ */
+  #levels { background: var(--bg-void); }
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .level-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  }
+  .level-card:hover {
+    border-color: var(--border-lit);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+  }
+  .level-card.featured {
+    border-color: var(--gold-dim);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(240,180,41,0.04) 100%);
+  }
+  .level-card.featured::before {
+    content: 'MOST CHALLENGING';
+    position: absolute; top: 16px; right: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-dim);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .level-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 5px 14px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+  .level-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .level-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .level-card p { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.65; margin-bottom: 20px; }
+  .level-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .level-tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  /* ============ ACADEMY / CHALLENGE ============ */
+  #academy { background: var(--bg-deep); }
+  
+  /* Level tabs */
+  .level-tabs {
+    display: flex; gap: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    margin-bottom: 40px;
+    width: fit-content;
+  }
+  .level-tab {
+    font-family: var(--font-display);
+    font-size: 0.825rem;
+    font-weight: 500;
+    padding: 9px 20px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .level-tab:hover { color: var(--text-secondary); }
+  .level-tab.active {
+    background: var(--gold);
+    color: #000;
+    font-weight: 600;
+  }
+
+  /* Challenge card */
+  .challenge-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .challenge-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .challenge-meta {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .challenge-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .challenge-title-sm {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .challenge-pts {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .chart-area {
+    position: relative;
+    background: #060b14;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .chart-area canvas {
+    display: block;
+    width: 100%;
+  }
+  .chart-overlay-label {
+    position: absolute;
+    top: 14px; left: 18px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: rgba(6,11,20,0.8);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .chart-placeholder {
+    background: #060b14;
+    border-bottom: 1px solid var(--border);
+    height: 320px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-placeholder-text {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    z-index: 2;
+  }
+  .chart-placeholder-text span {
+    display: block;
+    font-size: 0.65rem;
+    margin-top: 6px;
+    color: var(--border-lit);
+  }
+
+  /* Analysis form */
+  .analysis-form {
+    padding: 32px 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .form-select {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    outline: none;
+    transition: border-color var(--transition);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5878' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+  .form-select:focus { border-color: var(--gold); }
+  .form-select option { background: var(--bg-deep); }
+
+  .form-textarea {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    resize: vertical;
+    min-height: 90px;
+    transition: border-color var(--transition);
+    line-height: 1.6;
+  }
+  .form-textarea:focus { border-color: var(--gold); }
+  .form-textarea::placeholder { color: var(--text-muted); }
+
+  .form-actions {
+    padding: 0 28px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .submit-btn {
+    background: var(--gold);
+    color: #000;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 13px 28px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .submit-btn:hover {
+    background: #ffc93d;
+    box-shadow: var(--shadow-gold);
+    transform: translateY(-1px);
+  }
+  .submit-btn:active { transform: translateY(0); }
+  .hint-link {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+  .hint-link:hover { color: var(--text-secondary); }
+
+  /* Feedback panel */
+  .feedback-panel {
+    margin: 0 28px 28px;
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    display: none;
+    border: 1px solid;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .feedback-panel.correct {
+    background: var(--green-dim);
+    border-color: var(--green);
+  }
+  .feedback-panel.wrong {
+    background: var(--red-dim);
+    border-color: var(--red);
+  }
+  .feedback-panel.partial {
+    background: rgba(240,180,41,0.08);
+    border-color: var(--gold-dim);
+  }
+  .feedback-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .feedback-icon { font-size: 1.2rem; }
+  .feedback-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .feedback-body { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.65; }
+  .score-breakdown {
+    display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .score-item {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+  }
+  .score-item.ok  { color: var(--green); border-color: var(--green); }
+  .score-item.bad { color: var(--red);   border-color: var(--red);   }
+
+  /* Progress & score */
+  .progress-bar-wrap {
+    background: var(--bg-raised);
+    border-radius: 20px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 20px;
+    transition: width 0.6s ease;
+  }
+
+  /* Scoreboard sidebar */
+  .academy-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .academy-layout { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+  }
+  .sidebar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .sidebar-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sidebar-header .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+  .sidebar-body { padding: 20px; }
+
+  .score-display {
+    text-align: center;
+    padding: 24px 20px;
+  }
+  .score-big {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+  .score-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row-label { color: var(--text-secondary); }
+  .stat-row-val {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .stat-row-val.green { color: var(--green); }
+  .stat-row-val.gold  { color: var(--gold);  }
+
+  /* Leaderboard */
+  .lb-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    width: 20px; text-align: center;
+  }
+  .lb-rank.gold-rank { color: var(--gold); font-weight: 600; }
+  .lb-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .lb-info { flex: 1; min-width: 0; }
+  .lb-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .lb-country { font-size: 0.68rem; color: var(--text-muted); }
+  .lb-score {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ============ CONCEPTS ============ */
+  #concepts { background: var(--bg-void); }
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .concept-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    transition: border-color var(--transition), transform var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .concept-card:hover {
+    border-color: var(--border-lit);
+    transform: translateY(-2px);
+  }
+  .concept-card:hover::before { opacity: 1; }
+  .concept-icon {
+    width: 44px; height: 44px;
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-dim);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 18px;
+  }
+  .concept-card h3 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .concept-card p { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.7; }
+  .concept-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; }
+  .ctag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--gold);
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-dim);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  /* ============ TESTIMONIALS ============ */
+  #social { background: var(--bg-deep); }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .testimonial-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    position: relative;
+  }
+  .testimonial-quote {
+    font-size: 2rem;
+    color: var(--gold-dim);
+    line-height: 1;
+    margin-bottom: 14px;
+    font-family: Georgia, serif;
+  }
+  .testimonial-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .testimonial-author {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .t-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .t-name { font-size: 0.85rem; font-weight: 600; }
+  .t-role { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+  .t-stars {
+    margin-left: auto;
+    color: var(--gold);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+  }
+
+  /* ============ CONTACT ============ */
+  #contact { background: var(--bg-void); }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  @media (max-width: 700px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .contact-left h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    line-height: 1.15;
+  }
+  .contact-left p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; margin-bottom: 28px; }
+  .contact-items { display: flex; flex-direction: column; gap: 16px; }
+  .contact-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition);
+    text-decoration: none;
+    color: inherit;
+  }
+  .contact-item:hover { border-color: var(--gold-dim); }
+  .contact-item-icon {
+    width: 40px; height: 40px;
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-dim);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .contact-item-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px; }
+  .contact-item-val { font-size: 0.875rem; font-weight: 500; }
+
+  .contact-form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px;
+  }
+  .contact-form-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .cf-group { margin-bottom: 16px; }
+  .cf-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .cf-input {
+    width: 100%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    padding: 11px 16px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+  .cf-input:focus { border-color: var(--gold); }
+  .cf-input::placeholder { color: var(--text-muted); }
+  .cf-textarea {
+    width: 100%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    padding: 11px 16px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    resize: vertical;
+    min-height: 110px;
+    transition: border-color var(--transition);
+    line-height: 1.6;
+  }
+  .cf-textarea:focus { border-color: var(--gold); }
+  .cf-textarea::placeholder { color: var(--text-muted); }
+  .cf-submit {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    background: var(--bg-deep);
+    border-top: 1px solid var(--border);
+    padding: 48px 2rem 32px;
+  }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;
+  }
+  .footer-logo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color var(--transition);
+  }
+  .footer-links a:hover { color: var(--text-secondary); }
+  .footer-copy {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  /* ============ MISC ============ */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+  .text-gold { color: var(--gold); }
+  .text-green { color: var(--green); }
+
+  /* Mobile nav */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero-stats { gap: 24px; }
+    .level-tabs { width: 100%; overflow-x: auto; }
+    .analysis-form { grid-template-columns: 1fr; }
+    .challenge-header { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* Smooth reveal */
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    Zone Theory
+  </a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#levels">Levels</a>
+    <a href="#academy">Challenge</a>
+    <a href="#concepts">Concepts</a>
+    <a href="#contact" class="nav-cta">Get Coaching</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <!-- Ticker tape -->
+  <div class="ticker-wrap" style="position:relative;z-index:2;">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <div class="hero-eyebrow">Supply & Demand · SMC · ICT · Zone Theory</div>
+  <h1 class="hero-title">
+    Read the market<br>before it <span class="accent">moves.</span>
+  </h1>
+  <p class="hero-sub">
+    Train your eye on real chart structures. No hints, no labels — just candlesticks, liquidity, and your analysis.
+  </p>
+  <div class="hero-actions">
+    <a href="#academy" class="btn-primary">Start Challenge →</a>
+    <a href="#concepts" class="btn-secondary">Learn the Concepts</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-val" id="statStudents">0</span>
+      <span class="stat-lbl">Traders Trained</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val">3</span>
+      <span class="stat-lbl">Skill Levels</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val">12</span>
+      <span class="stat-lbl">Core Challenges</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val">100%</span>
+      <span class="stat-lbl">Free to Learn</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Process</span>
+      <h2 class="section-title">How the Academy works</h2>
+      <p class="section-sub">A progressive training loop that sharpens your analytical instincts with every rep.</p>
+    </div>
+    <div class="steps-grid reveal">
+      <div class="step-card">
+        <span class="step-num">01</span>
+        <span class="step-icon">📊</span>
+        <h3>Read a raw chart</h3>
+        <p>You receive a clean candlestick chart — no indicators, no labels. Just price action and structure.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">02</span>
+        <span class="step-icon">🧠</span>
+        <h3>Submit your analysis</h3>
+        <p>Identify market bias, liquidity pools, key zones, and your trading decision — the same way a professional would.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">03</span>
+        <span class="step-icon">⚡</span>
+        <h3>Get instant feedback</h3>
+        <p>Receive a scored breakdown of your answers with detailed reasoning for each element.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">04</span>
+        <span class="step-icon">🏆</span>
+        <h3>Advance your rank</h3>
+        <p>Accumulate points across challenges, unlock harder levels, and climb the leaderboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LEVELS OVERVIEW ── -->
+<section id="levels">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Curriculum</span>
+      <h2 class="section-title">Three levels of mastery</h2>
+      <p class="section-sub">Each level demands deeper reading of price, structure, and intent.</p>
+    </div>
+    <div class="levels-grid reveal">
+      <div class="level-card">
+        <div class="level-badge">
+          <span class="dot" style="background:#3b82f6;"></span>
+          Level 1
+        </div>
+        <h3>Rookie Trader</h3>
+        <p>Learn to see the market from above. Identify trend, obvious liquidity, and the clearest supply or demand zone.</p>
+        <div class="level-tags">
+          <span class="level-tag">Market Bias</span>
+          <span class="level-tag">Liquidity</span>
+          <span class="level-tag">Key Zones</span>
+        </div>
+      </div>
+      <div class="level-card featured">
+        <div class="level-badge">
+          <span class="dot" style="background:var(--gold);"></span>
+          Level 2
+        </div>
+        <h3>Pro Analyst</h3>
+        <p>Multi-timeframe context, BOS/CHoCH confirmation, and precision zone selection with a justified entry reason.</p>
+        <div class="level-tags">
+          <span class="level-tag">BOS / CHoCH</span>
+          <span class="level-tag">MTF Analysis</span>
+          <span class="level-tag">Entry Logic</span>
+          <span class="level-tag">FVG / OB</span>
+        </div>
+      </div>
+      <div class="level-card">
+        <div class="level-badge">
+          <span class="dot" style="background:#ef4444;"></span>
+          Level 3
+        </div>
+        <h3>Elite Trader</h3>
+        <p>Confluence scoring, institutional order flow, liquidity sweeps, and a full trade plan with invalidation.</p>
+        <div class="level-tags">
+          <span class="level-tag">Liquidity Sweeps</span>
+          <span class="level-tag">Order Flow</span>
+          <span class="level-tag">Confluence</span>
+          <span class="level-tag">Trade Plan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACADEMY / CHALLENGE ── -->
+<section id="academy">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Training Zone</span>
+      <h2 class="section-title">Trading Challenge</h2>
+      <p class="section-sub">No hints. No labels. No shortcuts. Prove your skills on real price action.</p>
+    </div>
+
+    <!-- Level tabs -->
+    <div class="level-tabs reveal">
+      <button class="level-tab active" onclick="switchLevel(1,this)">Level 1 — Rookie</button>
+      <button class="level-tab" onclick="switchLevel(2,this)">Level 2 — Pro</button>
+      <button class="level-tab" onclick="switchLevel(3,this)">Level 3 — Elite</button>
+    </div>
+
+    <div class="academy-layout">
+      <!-- Main challenge -->
+      <div>
+        <!-- Challenge card -->
+        <div class="challenge-card reveal" id="challengeCard">
+          <div class="challenge-header">
+            <div class="challenge-meta">
+              <span class="challenge-tag" id="challengeTagEl">CHALLENGE #1</span>
+              <span class="challenge-title-sm" id="challengeTitleEl">Identify market bias, liquidity and strongest zone</span>
+            </div>
+            <span class="challenge-pts" id="challengePtsEl">+50 pts per question</span>
+          </div>
+
+          <!-- Chart placeholder (replace img src with your real chart images) -->
+          <div class="chart-placeholder" id="chartArea">
+            <canvas id="demoChart" width="1000" height="320" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+            <div class="chart-overlay-label" id="chartLabel">XAUUSD · 4H · Supply & Demand</div>
+            <div class="chart-placeholder-text" style="position:relative;z-index:3;pointer-events:none;" id="chartPlaceholderMsg">
+              <span style="font-size:1.4rem;">📈</span><br>
+              Replace with your real chart screenshot<br>
+              <span>See setup instructions below</span>
+            </div>
+          </div>
+
+          <!-- Analysis form -->
+          <div class="analysis-form" id="analysisForm">
+            <div class="form-group" id="biasGroup">
+              <label class="form-label">Market Bias</label>
+              <select class="form-select" id="biasSelect">
+                <option value="">— Select —</option>
+                <option value="bullish">Bullish</option>
+                <option value="bearish">Bearish</option>
+                <option value="range">Range / Consolidation</option>
+              </select>
+            </div>
+            <div class="form-group" id="liquidityGroup">
+              <label class="form-label">Liquidity Location</label>
+              <select class="form-select" id="liquiditySelect">
+                <option value="">— Select —</option>
+                <option value="above">Above Recent Highs</option>
+                <option value="below">Below Recent Lows</option>
+                <option value="both">Both Sides</option>
+              </select>
+            </div>
+            <div class="form-group" id="decisionGroup">
+              <label class="form-label">Trading Decision</label>
+              <select class="form-select" id="decisionSelect">
+                <option value="">— Select —</option>
+                <option value="buy">Buy / Long</option>
+                <option value="sell">Sell / Short</option>
+                <option value="wait">Wait — No Setup</option>
+              </select>
+            </div>
+            <div class="form-group" id="zoneGroup" style="display:none;">
+              <label class="form-label">Zone Type</label>
+              <select class="form-select" id="zoneSelect">
+                <option value="">— Select —</option>
+                <option value="supply">Supply Zone</option>
+                <option value="demand">Demand Zone</option>
+                <option value="both">Both Zones Present</option>
+              </select>
+            </div>
+            <div class="form-group" id="structureGroup" style="display:none;">
+              <label class="form-label">Structure Event</label>
+              <select class="form-select" id="structureSelect">
+                <option value="">— Select —</option>
+                <option value="bos">BOS — Break of Structure</option>
+                <option value="choch">CHoCH — Change of Character</option>
+                <option value="none">No Confirmed Event</option>
+              </select>
+            </div>
+            <div class="form-group" id="entryGroup" style="display:none; grid-column: 1/-1;">
+              <label class="form-label">Entry Reasoning</label>
+              <textarea class="form-textarea" id="entryTextarea" placeholder="Explain your entry logic: zone type, confluence, entry trigger, invalidation level..."></textarea>
+            </div>
+          </div>
+
+          <!-- Feedback -->
+          <div class="feedback-panel" id="feedbackPanel">
+            <div class="feedback-header">
+              <span class="feedback-icon" id="feedbackIcon"></span>
+              <span class="feedback-title" id="feedbackTitle"></span>
+            </div>
+            <p class="feedback-body" id="feedbackBody"></p>
+            <div class="score-breakdown" id="scoreBreakdown"></div>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button class="submit-btn" onclick="submitChallenge()">
+              <span>Submit Analysis</span> <span>→</span>
+            </button>
+            <a href="#contact" class="hint-link">Need help? Ask the coach →</a>
+          </div>
+        </div>
+
+        <!-- Nav between challenges -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:0 4px;" class="reveal">
+          <button onclick="prevChallenge()" style="background:none;border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-body);font-size:0.8rem;padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">← Previous</button>
+          <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);" id="challengeNav">Challenge 1 / 4</span>
+          <button onclick="nextChallenge()" style="background:none;border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-body);font-size:0.8rem;padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">Next →</button>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar reveal">
+        <!-- Score -->
+        <div class="sidebar-card">
+          <div class="sidebar-header"><span class="dot"></span> Your Score</div>
+          <div class="score-display">
+            <span class="score-big" id="scoreDisplay">0</span>
+            <div class="score-label">Total Points</div>
+          </div>
+          <div style="padding:0 20px 20px;">
+            <div style="margin-bottom:8px;display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-muted);">
+              <span>Progress</span><span id="progressPct">0%</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="progressBar" style="width:0%;"></div>
+            </div>
+          </div>
+          <div style="padding:0 20px 20px;">
+            <div class="stat-row"><span class="stat-row-label">Correct answers</span><span class="stat-row-val green" id="correctCount">0</span></div>
+            <div class="stat-row"><span class="stat-row-label">Challenges done</span><span class="stat-row-val" id="doneCount">0 / 12</span></div>
+            <div class="stat-row"><span class="stat-row-label">Current level</span><span class="stat-row-val gold" id="levelLabel">Rookie</span></div>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="sidebar-card">
+          <div class="sidebar-header"><span class="dot"></span> Leaderboard</div>
+          <div class="sidebar-body" id="leaderboard">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="sidebar-card" style="background:linear-gradient(135deg,var(--bg-card),rgba(240,180,41,0.04));border-color:var(--gold-dim);">
+          <div class="sidebar-body" style="text-align:center;padding:28px 20px;">
+            <div style="font-size:1.6rem;margin-bottom:12px;">🎯</div>
+            <h4 style="font-family:var(--font-display);font-size:0.95rem;font-weight:600;margin-bottom:10px;">Want live mentorship?</h4>
+            <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.6;margin-bottom:20px;">Chart reviews, private coaching, and advanced supply & demand breakdowns.</p>
+            <a href="#contact" class="btn-primary" style="font-size:0.8rem;padding:10px 20px;display:inline-flex;">Contact the Coach</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONCEPTS ── -->
+<section id="concepts">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Theory</span>
+      <h2 class="section-title">Core concepts to master</h2>
+      <p class="section-sub">The building blocks of professional supply & demand and SMC analysis.</p>
+    </div>
+    <div class="concepts-grid reveal">
+      <div class="concept-card">
+        <div class="concept-icon">📦</div>
+        <h3>Supply & Demand Zones</h3>
+        <p>Price returns to areas where institutions placed unfilled orders. These zones mark the real support and resistance — not the lines retail traders draw.</p>
+        <div class="concept-tags"><span class="ctag">Origin Candle</span><span class="ctag">Zone Freshness</span><span class="ctag">Distal / Proximal</span></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">💧</div>
+        <h3>Liquidity Pools</h3>
+        <p>Equal highs, equal lows, stop clusters above swing points — price seeks these areas to fill institutional orders before reversing.</p>
+        <div class="concept-tags"><span class="ctag">EQH / EQL</span><span class="ctag">BSL / SSL</span><span class="ctag">Stop Hunt</span></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">📐</div>
+        <h3>Market Structure</h3>
+        <p>BOS confirms continuation. CHoCH signals a potential reversal. Reading structure gives you context before entering any trade.</p>
+        <div class="concept-tags"><span class="ctag">BOS</span><span class="ctag">CHoCH</span><span class="ctag">MSS</span></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">⚖️</div>
+        <h3>Premium & Discount</h3>
+        <p>The 50% equilibrium line splits every range. Buying in discount and selling in premium is the institutional way.</p>
+        <div class="concept-tags"><span class="ctag">Fibonacci 50%</span><span class="ctag">Equilibrium</span><span class="ctag">OTE</span></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔲</div>
+        <h3>Order Blocks & FVG</h3>
+        <p>The last candle before an impulse move hides institutional footprints. Fair Value Gaps show where price moved too fast and needs to return.</p>
+        <div class="concept-tags"><span class="ctag">OB</span><span class="ctag">FVG</span><span class="ctag">IFVG</span></div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🌐</div>
+        <h3>Top-Down Analysis</h3>
+        <p>Daily sets the bias. 4H confirms the zone. 1H provides entry structure. 15M/5M triggers the execution. Never fight the higher timeframe.</p>
+        <div class="concept-tags"><span class="ctag">D → 4H → 1H</span><span class="ctag">HTF Bias</span><span class="ctag">LTF Entry</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="social">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Community</span>
+      <h2 class="section-title">Traders who leveled up</h2>
+      <p class="section-sub">From struggling retail to reading zones like a professional.</p>
+    </div>
+    <div class="testimonials-grid reveal">
+      <div class="testimonial-card">
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">After weeks of just watching YouTube, the challenge format forced me to actually think. I caught my first real BOS on a live chart the next day.</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">🇲🇦</div>
+          <div>
+            <div class="t-name">Youssef A.</div>
+            <div class="t-role">Forex Trader — Morocco</div>
+          </div>
+          <div class="t-stars">★★★★★</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">The concepts section clarified everything I'd been confusing. Now I understand why price sweeps liquidity before it returns to a zone.</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">🇹🇳</div>
+          <div>
+            <div class="t-name">Sana B.</div>
+            <div class="t-role">Student Trader — Tunisia</div>
+          </div>
+          <div class="t-stars">★★★★★</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">Level 3 is genuinely hard. I had to go back and rewatch my HTF analysis process. That's exactly what I needed — a real test.</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">🇩🇿</div>
+          <div>
+            <div class="t-name">Karim L.</div>
+            <div class="t-role">Prop Firm Trader — Algeria</div>
+          </div>
+          <div class="t-stars">★★★★★</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-left reveal">
+        <span class="section-tag">Coaching</span>
+        <h2>Ready to accelerate<br>your edge?</h2>
+        <p>Advanced lessons, chart reviews, private sessions, and direct mentorship from someone who's built the framework you're training on.</p>
+        <div class="contact-items">
+          <a href="mailto:i97117384@gmail.com" class="contact-item">
+            <div class="contact-item-icon">📧</div>
+            <div>
+              <div class="contact-item-label">Email</div>
+              <div class="contact-item-val">i97117384@gmail.com</div>
+            </div>
+          </a>
+          <div class="contact-item" style="cursor:default;">
+            <div class="contact-item-icon">⏱</div>
+            <div>
+              <div class="contact-item-label">Response time</div>
+              <div class="contact-item-val">Within 24 hours</div>
+            </div>
+          </div>
+          <div class="contact-item" style="cursor:default;">
+            <div class="contact-item-icon">🌍</div>
+            <div>
+              <div class="contact-item-label">Coaching language</div>
+              <div class="contact-item-val">English · French · Arabic</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-card reveal">
+        <h3>Send a message</h3>
+        <div class="cf-group">
+          <label class="cf-label">Your name</label>
+          <input class="cf-input" type="text" placeholder="Ali Hassan" id="cfName">
+        </div>
+        <div class="cf-group">
+          <label class="cf-label">Email</label>
+          <input class="cf-input" type="email" placeholder="ali@email.com" id="cfEmail">
+        </div>
+        <div class="cf-group">
+          <label class="cf-label">What do you need?</label>
+          <select class="cf-input" id="cfType" style="appearance:none;cursor:pointer;">
+            <option value="">— Select —</option>
+            <option>Chart Review</option>
+            <option>Private Coaching Session</option>
+            <option>Zone Theory Course Access</option>
+            <option>Just a question</option>
+          </select>
+        </div>
+        <div class="cf-group">
+          <label class="cf-label">Message</label>
+          <textarea class="cf-textarea" placeholder="Tell me where you are in your trading journey and what you want to improve..." id="cfMsg"></textarea>
+        </div>
+        <button class="btn-primary cf-submit" onclick="submitContact()">Send Message →</button>
+        <p id="cfSuccess" style="display:none;color:var(--green);font-size:0.82rem;margin-top:12px;text-align:center;">✓ Message prepared — click to open your email app.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Zone<span>Theory</span> Academy</div>
+    <div class="footer-links">
+      <a href="#how">How it works</a>
+      <a href="#levels">Levels</a>
+      <a href="#academy">Challenge</a>
+      <a href="#concepts">Concepts</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+  <div class="footer-copy">
+    © 2025 Zone Theory Academy — Built for traders who take price action seriously.
+  </div>
+</footer>
+
+<!-- ── SCRIPTS ── -->
+<script>
+/* ===========================
+   TICKER TAPE
+=========================== */
+const tickerData = [
+  { pair:'XAUUSD', price:'2,387.40', chg:'+0.62%', up:true },
+  { pair:'EURUSD', price:'1.08214',  chg:'-0.14%', up:false },
+  { pair:'GBPUSD', price:'1.27043',  chg:'+0.28%', up:true },
+  { pair:'USDJPY', price:'154.870',  chg:'-0.35%', up:false },
+  { pair:'BTCUSD', price:'67,240',   chg:'+1.12%', up:true },
+  { pair:'NASDAQ', price:'17,840',   chg:'+0.44%', up:true },
+  { pair:'USDCAD', price:'1.36540',  chg:'-0.09%', up:false },
+  { pair:'AUDUSD', price:'0.65140',  chg:'+0.18%', up:true },
+  { pair:'WTI', price:'82.74',       chg:'-0.81%', up:false },
+  { pair:'S&P500', price:'5,128',    chg:'+0.37%', up:true },
+];
+function buildTicker() {
+  const track = document.getElementById('tickerTrack');
+  const doubled = [...tickerData, ...tickerData]; // duplicate for seamless loop
+  track.innerHTML = doubled.map(d => `
+    <span class="ticker-item">
+      <span class="ticker-pair">${d.pair}</span>
+      <span class="ticker-price">${d.price}</span>
+      <span class="ticker-chg ${d.up?'up':'down'}">${d.chg}</span>
+      <span class="ticker-sep">|</span>
+    </span>`).join('');
+}
+buildTicker();
+
+/* ===========================
+   ANIMATED COUNTER
+=========================== */
+function animateCount(el, target, duration=1800) {
+  let start = 0, step = target/60, current = 0;
+  const timer = setInterval(()=>{
+    current = Math.min(current + step, target);
+    el.textContent = Math.round(current).toLocaleString() + (target>100?'+':'');
+    if(current >= target) clearInterval(timer);
+  }, duration/60);
+}
+setTimeout(()=> animateCount(document.getElementById('statStudents'), 340), 600);
+
+/* ===========================
+   SCROLL REVEAL
+=========================== */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ===========================
+   DEMO CANDLESTICK CHART
+=========================== */
+(function drawChart() {
+  const canvas = document.getElementById('demoChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = { top:30, right:60, bottom:40, left:60 };
+
+  // Sample OHLC data
+  const rawCandles = [
+    [100,108,96,105],[105,112,103,110],[110,115,108,109],[109,113,104,106],
+    [106,108,99,100],[100,104,95,97],[97,100,91,94],[94,101,92,99],
+    [99,107,98,106],[106,111,104,110],[110,118,109,116],[116,120,113,114],
+    [114,117,108,110],[110,113,104,106],[106,109,100,103],[103,106,96,99],
+    [99,103,94,100],[100,108,99,107],[107,115,106,113],[113,121,112,119],
+    [119,124,117,122],[122,126,118,120],[120,123,115,117],[117,120,111,114],
+    [114,117,108,111],[111,115,106,113],[113,120,112,119],[119,127,118,125],
+    [125,131,122,128],[128,134,127,132]
+  ];
+
+  const prices = rawCandles.flat();
+  const minP = Math.min(...prices) - 4;
+  const maxP = Math.max(...prices) + 4;
+  const pRange = maxP - minP;
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+
+  function px(price) { return pad.top + chartH - ((price-minP)/pRange)*chartH; }
+  function xPos(i) { return pad.left + (i+0.5)*(chartW/rawCandles.length); }
+  const cw = Math.max(4, chartW/rawCandles.length * 0.55);
+
+  // Background
+  ctx.fillStyle = '#060b14';
+  ctx.fillRect(0,0,W,H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(30,42,61,0.6)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<5;i++){
+    const y = pad.top + (chartH/4)*i;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    const priceLabel = (maxP - (pRange/4)*i).toFixed(0);
+    ctx.fillStyle='#4a5878'; ctx.font='11px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(priceLabel, pad.left-8, y+4);
+  }
+
+  // Highlight supply zone
+  const supplyY1 = px(130), supplyY2 = px(121);
+  ctx.fillStyle='rgba(239,68,68,0.08)';
+  ctx.fillRect(pad.left, supplyY1, chartW, supplyY2-supplyY1);
+  ctx.strokeStyle='rgba(239,68,68,0.35)';
+  ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(pad.left,supplyY1); ctx.lineTo(W-pad.right,supplyY1); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.left,supplyY2); ctx.lineTo(W-pad.right,supplyY2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Highlight demand zone
+  const demandY1 = px(95), demandY2 = px(100);
+  ctx.fillStyle='rgba(16,185,129,0.08)';
+  ctx.fillRect(pad.left, demandY1, chartW, demandY2-demandY1);
+  ctx.strokeStyle='rgba(16,185,129,0.35)';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(pad.left,demandY1); ctx.lineTo(W-pad.right,demandY1); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.left,demandY2); ctx.lineTo(W-pad.right,demandY2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Zone labels
+  ctx.font='10px Inter,sans-serif'; ctx.textAlign='right'; ctx.fillStyle='rgba(239,68,68,0.7)';
+  ctx.fillText('SUPPLY', W-pad.right-4, supplyY1-4);
+  ctx.fillStyle='rgba(16,185,129,0.7)';
+  ctx.fillText('DEMAND', W-pad.right-4, demandY2+12);
+
+  // Draw candles
+  rawCandles.forEach((c,i)=>{
+    const [o,h,l,cl] = c;
+    const x = xPos(i);
+    const bull = cl >= o;
+    const color = bull ? '#10b981' : '#ef4444';
+    const bodyTop = px(Math.max(o,cl)), bodyBot = px(Math.min(o,cl));
+    const bodyH = Math.max(1, bodyBot-bodyTop);
+
+    // Wick
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x, px(h)); ctx.lineTo(x, px(l)); ctx.stroke();
+    // Body
+    ctx.fillStyle = bull ? 'rgba(16,185,129,0.85)' : 'rgba(239,68,68,0.85)';
+    ctx.fillRect(x-cw/2, bodyTop, cw, bodyH);
+  });
+
+  // Equilibrium line
+  const eqY = px((maxP+minP)/2);
+  ctx.strokeStyle='rgba(240,180,41,0.4)'; ctx.lineWidth=1; ctx.setLineDash([6,6]);
+  ctx.beginPath(); ctx.moveTo(pad.left,eqY); ctx.lineTo(W-pad.right,eqY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(240,180,41,0.6)'; ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('EQ 50%', pad.left+6, eqY-4);
+
+  // Hide placeholder text
+  document.getElementById('chartPlaceholderMsg').style.display='none';
+})();
+
+/* ===========================
+   LEADERBOARD
+=========================== */
+const lbData = [
+  { rank:1, flag:'🇩🇿', name:'K. Larbi',   country:'Algeria',  score:2340 },
+  { rank:2, flag:'🇪🇬', name:'M. Hassan',  country:'Egypt',    score:1980 },
+  { rank:3, flag:'🇲🇦', name:'Y. Amrani',  country:'Morocco',  score:1760 },
+  { rank:4, flag:'🇹🇳', name:'S. Trabelsi',country:'Tunisia',  score:1540 },
+  { rank:5, flag:'🇸🇦', name:'F. Al-Harbi',country:'Saudi',    score:1320 },
+];
+function buildLeaderboard() {
+  document.getElementById('leaderboard').innerHTML = lbData.map(p=>`
+    <div class="lb-row">
+      <span class="lb-rank ${p.rank===1?'gold-rank':''}">${p.rank===1?'🥇':p.rank}</span>
+      <div class="lb-avatar">${p.flag}</div>
+      <div class="lb-info">
+        <div class="lb-name">${p.name}</div>
+        <div class="lb-country">${p.country}</div>
+      </div>
+      <span class="lb-score">${p.score.toLocaleString()}</span>
+    </div>`).join('');
+}
+buildLeaderboard();
+
+/* ===========================
+   CHALLENGE SYSTEM
+=========================== */
+let currentLevel = 1;
+let currentChallenge = 0;
+let totalScore = 0;
+let correctCount = 0;
+let doneSet = new Set();
+
+const challenges = {
+  1: [
+    {
+      tag:'CHALLENGE #1', pts:'+50 pts', title:'Identify market bias, liquidity and strongest zone',
+      chart:'XAUUSD · 4H · Supply & Demand',
+      answers:{ bias:'bullish', liquidity:'above', decision:'buy' },
+      feedback:{
+        correct:"Perfect read. Price is making HH/HL structure, liquidity sits above the recent swing highs, and the demand zone gives a clean buy setup.",
+        partial:"Partially correct. Check your liquidity read — when price is in an uptrend and hasn't swept recent highs, the draw is almost always on buy-side liquidity above.",
+        wrong:"Review the chart again. Look for HH/HL sequences for bias, then identify where stop orders are clustered."
+      }
+    },
+    {
+      tag:'CHALLENGE #2', pts:'+50 pts', title:'Which side holds the most liquidity?',
+      chart:'GBPUSD · 1H · Liquidity Study',
+      answers:{ bias:'bearish', liquidity:'below', decision:'sell' },
+      feedback:{
+        correct:"Excellent. Equal lows below form a liquidity pool. Price is in a downtrend (LH/LL) and the sellside liquidity is the draw.",
+        partial:"Close, but your bias or decision doesn't align. In a LH/LL structure, the draw is sell-side liquidity below.",
+        wrong:"Look for repeated lows at the same level — that's where stop orders accumulate. The trend context gives you the bias."
+      }
+    },
+    {
+      tag:'CHALLENGE #3', pts:'+50 pts', title:'Is there a valid trade setup here, or should you wait?',
+      chart:'EURUSD · 4H · Structure Check',
+      answers:{ bias:'range', liquidity:'both', decision:'wait' },
+      feedback:{
+        correct:"Great discipline. Price is ranging, no confirmed bias, liquidity sits on both sides. The correct answer is to wait.",
+        partial:"Be careful. When market structure is unclear and there's no clear directional draw, the trade is not to trade.",
+        wrong:"Not every chart needs a trade. This is a range — no confirmed BOS, no clear bias. Wait for structure to break."
+      }
+    },
+    {
+      tag:'CHALLENGE #4', pts:'+50 pts', title:'Identify the bias after the structure shift',
+      chart:'USDJPY · Daily · Structure Shift',
+      answers:{ bias:'bearish', liquidity:'below', decision:'sell' },
+      feedback:{
+        correct:"Sharp. The CHoCH confirmed bearish intent, SSL is the target below. Sell setup is valid from a supply zone.",
+        partial:"You caught part of it. The key is the CHoCH — once that confirms, bias flips bearish and the draw is sellside.",
+        wrong:"Look for the moment price broke a significant low — that's a CHoCH or BOS to the downside, shifting bias bearish."
+      }
+    }
+  ],
+  2: [
+    {
+      tag:'CHALLENGE #5', pts:'+100 pts', title:'Identify the BOS or CHoCH and justify the bias',
+      chart:'XAUUSD · 1H · Structure Event',
+      answers:{ bias:'bullish', liquidity:'above', decision:'buy', structure:'bos' },
+      feedback:{
+        correct:"Spot on. The BOS to the upside confirmed bullish continuation. Price is targeting buyside liquidity. OB/FVG at the most recent demand zone is the entry area.",
+        partial:"Check your structure event. A BOS means continuation — price broke a previous high with momentum and closed above it.",
+        wrong:"Identify the most recent significant high or low that was broken with a full candle close. That's your BOS or CHoCH event."
+      }
+    },
+    {
+      tag:'CHALLENGE #6', pts:'+100 pts', title:'Where is the OTE and how would you enter?',
+      chart:'EURUSD · 4H · OTE Entry',
+      answers:{ bias:'bearish', liquidity:'below', decision:'sell', structure:'choch' },
+      feedback:{
+        correct:"Professional execution. CHoCH confirmed the shift. OTE sits between 62-79% of the last impulse leg — that's your entry zone.",
+        partial:"The structure event matters — CHoCH is a character change, signaling a potential reversal, unlike BOS which is continuation.",
+        wrong:"Identify the last significant impulse leg, map the Fibonacci, and look for confluence between the OTE zone and a supply zone."
+      }
+    },
+    {
+      tag:'CHALLENGE #7', pts:'+100 pts', title:'Multi-timeframe: does the 1H align with the Daily?',
+      chart:'GBPJPY · Multi-TF · Alignment',
+      answers:{ bias:'bullish', liquidity:'above', decision:'buy', structure:'bos' },
+      feedback:{
+        correct:"Excellent MTF read. Daily is bullish, 1H BOS confirms, demand zone aligns. That's a confluent long setup.",
+        partial:"Think about HTF first. If Daily is bullish, you only want buy setups on the 1H — never fight the higher timeframe.",
+        wrong:"Always start with Daily bias, then confirm on 4H, then find structure events on 1H. The lower timeframe should align."
+      }
+    },
+    {
+      tag:'CHALLENGE #8', pts:'+100 pts', title:'Is the zone fresh or mitigated?',
+      chart:'XAUUSD · 4H · Zone Freshness',
+      answers:{ bias:'bearish', liquidity:'below', decision:'wait', structure:'none' },
+      feedback:{
+        correct:"Correct — the zone is mitigated (price already tested it). A tested zone loses its institutional interest. Wait for a new one.",
+        partial:"Zone freshness is key. If price has already revisited and reacted from a zone, that zone's edge is reduced.",
+        wrong:"Check if price has already returned to and bounced from this zone. A mitigated zone is a lower-probability setup."
+      }
+    }
+  ],
+  3: [
+    {
+      tag:'CHALLENGE #9', pts:'+200 pts', title:'Score the zone confluence and build a full trade plan',
+      chart:'XAUUSD · 4H → 1H · Full Plan',
+      answers:{ bias:'bullish', liquidity:'above', decision:'buy', structure:'bos', zone:'demand' },
+      feedback:{
+        correct:"Elite analysis. Zone confluence (OB + FVG + Demand + Fib OTE) scores 4/4. Full trade plan: buy at demand zone, SL below zone origin, TP at buyside liquidity. That's institutional-grade.",
+        partial:"Good structure read, but your trade plan needs more detail. Always define: entry, SL, TP, confluence score, and invalidation.",
+        wrong:"Elite level requires: HTF bias → LTF structure event → zone identification → confluence scoring → entry trigger → SL/TP → invalidation."
+      }
+    },
+    {
+      tag:'CHALLENGE #10', pts:'+200 pts', title:'Identify the liquidity sweep and the true reversal point',
+      chart:'EURUSD · 15M · Sweep Detection',
+      answers:{ bias:'bearish', liquidity:'below', decision:'sell', structure:'choch', zone:'supply' },
+      feedback:{
+        correct:"Perfect. Price swept BSL (buy-side), rejected from supply zone, CHoCH confirmed bearish. That's the true reversal — now target SSL below.",
+        partial:"The liquidity sweep is critical. Price spikes above equal highs (BSL) to trigger stops, then reverses. That spike is the signal, not the noise.",
+        wrong:"Look for a spike above recent equal highs followed by a strong rejection candle. That's the sweep. The CHoCH shortly after confirms the reversal."
+      }
+    },
+    {
+      tag:'CHALLENGE #11', pts:'+200 pts', title:'What is the institutional narrative on this chart?',
+      chart:'DXY + XAUUSD · Correlation · Narrative',
+      answers:{ bias:'bullish', liquidity:'above', decision:'buy', structure:'bos', zone:'demand' },
+      feedback:{
+        correct:"Institutional-level thinking. DXY weakness creates XAUUSD bullish bias. Price took SSL, swept lows, reversed with BOS. Demand zone is the entry. That's the full narrative.",
+        partial:"Think beyond single-pair analysis. DXY correlation, liquidity concepts, and the 'stop hunt then reverse' narrative are all part of elite reading.",
+        wrong:"Try to tell a story: where did price come from, what liquidity did it take, and where is it going next? That narrative is the edge."
+      }
+    },
+    {
+      tag:'CHALLENGE #12', pts:'+200 pts', title:'Final Elite Test — Full confluence trade from scratch',
+      chart:'GBPUSD · Full MTF · Elite Setup',
+      answers:{ bias:'bearish', liquidity:'below', decision:'sell', structure:'choch', zone:'supply' },
+      feedback:{
+        correct:"🏆 Elite level cleared. You identified HTF bias, LTF CHoCH, fresh supply zone, liquidity sweep as the trigger, and your trade plan is complete. This is how professionals trade.",
+        partial:"Almost there — the elite level requires every element: bias, structure, zone type, sweep identification, and a justified trade plan with entries, SL, and TP.",
+        wrong:"Take your time. Start at Daily, identify the narrative, step down to 4H for zones, 1H for structure events, and 15M for the entry. Build the full picture."
+      }
+    }
+  ]
+};
+
+function getAnswers() {
+  return {
+    bias: document.getElementById('biasSelect').value,
+    liquidity: document.getElementById('liquiditySelect').value,
+    decision: document.getElementById('decisionSelect').value,
+    zone: document.getElementById('zoneSelect')?.value || '',
+    structure: document.getElementById('structureSelect')?.value || '',
+    entry: document.getElementById('entryTextarea')?.value?.trim() || '',
+  };
+}
+
+function switchLevel(lvl, btn) {
+  currentLevel = lvl;
+  currentChallenge = 0;
+  document.querySelectorAll('.level-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('levelLabel').textContent = ['','Rookie','Pro Analyst','Elite Trader'][lvl];
+  loadChallenge();
+  hideFeedback();
+  resetSelects();
+}
+
+function loadChallenge() {
+  const list = challenges[currentLevel];
+  const c = list[currentChallenge];
+  if(!c) return;
+  document.getElementById('challengeTagEl').textContent   = c.tag;
+  document.getElementById('challengeTitleEl').textContent = c.title;
+  document.getElementById('challengePtsEl').textContent   = c.pts;
+  document.getElementById('chartLabel').textContent       = c.chart;
+  document.getElementById('challengeNav').textContent = `Challenge ${currentChallenge+1} / ${list.length}`;
+
+  // Show/hide extra fields based on level
+  document.getElementById('zoneGroup').style.display      = currentLevel>=3 ? 'flex' : 'none';
+  document.getElementById('structureGroup').style.display = currentLevel>=2 ? 'flex' : 'none';
+  document.getElementById('entryGroup').style.display     = currentLevel>=2 ? 'block' : 'none';
+}
+
+function resetSelects() {
+  ['biasSelect','liquiditySelect','decisionSelect','zoneSelect','structureSelect'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  const ta = document.getElementById('entryTextarea');
+  if(ta) ta.value = '';
+  hideFeedback();
+}
+
+function hideFeedback() {
+  document.getElementById('feedbackPanel').style.display = 'none';
+}
+
+function submitChallenge() {
+  const list = challenges[currentLevel];
+  const c = list[currentChallenge];
+  const ans = getAnswers();
+  const correct = c.answers;
+
+  const key = `${currentLevel}-${currentChallenge}`;
+  const alreadyDone = doneSet.has(key);
+
+  let correctFields = 0, totalFields = 0;
+  ['bias','liquidity','decision','zone','structure'].forEach(f=>{
+    if(correct[f]) {
+      totalFields++;
+      if(ans[f] === correct[f]) correctFields++;
+    }
+  });
+
+  const ratio = totalFields > 0 ? correctFields/totalFields : 0;
+  const panel = document.getElementById('feedbackPanel');
+  const icon  = document.getElementById('feedbackIcon');
+  const title = document.getElementById('feedbackTitle');
+  const body  = document.getElementById('feedbackBody');
+  const breakdown = document.getElementById('scoreBreakdown');
+
+  panel.className = 'feedback-panel';
+  panel.style.display = 'block';
+
+  const pointsEarned = currentLevel===1?50:currentLevel===2?100:200;
+
+  if(ratio === 1) {
+    panel.classList.add('correct');
+    icon.textContent  = '✅';
+    title.textContent = 'Perfect Analysis — ' + (alreadyDone?'(Already scored)':'+'+pointsEarned+' pts');
+    body.textContent  = c.feedback.correct;
+    if(!alreadyDone){ totalScore+=pointsEarned; correctCount++; doneSet.add(key); }
+  } else if(ratio >= 0.5) {
+    panel.classList.add('partial');
+    icon.textContent  = '⚡';
+    title.textContent = 'Partially Correct — ' + (alreadyDone?'(Already scored)':'+'+Math.round(pointsEarned*0.3)+' pts');
+    body.textContent  = c.feedback.partial;
+    if(!alreadyDone){ totalScore+=Math.round(pointsEarned*0.3); doneSet.add(key); }
+  } else {
+    panel.classList.add('wrong');
+    icon.textContent  = '❌';
+    title.textContent = 'Not Quite — Review your analysis';
+    body.textContent  = c.feedback.wrong;
+  }
+
+  // Score breakdown chips
+  breakdown.innerHTML = ['bias','liquidity','decision','zone','structure']
+    .filter(f=>correct[f])
+    .map(f=>`<span class="score-item ${ans[f]===correct[f]?'ok':'bad'}">${f}: ${ans[f]===correct[f]?'✓':'✗'}</span>`)
+    .join('');
+
+  updateScore();
+}
+
+function updateScore() {
+  document.getElementById('scoreDisplay').textContent = totalScore.toLocaleString();
+  document.getElementById('correctCount').textContent = correctCount;
+  document.getElementById('doneCount').textContent = doneSet.size + ' / 12';
+  const pct = Math.round((doneSet.size/12)*100);
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function nextChallenge() {
+  const list = challenges[currentLevel];
+  currentChallenge = (currentChallenge+1) % list.length;
+  loadChallenge(); resetSelects();
+}
+
+function prevChallenge() {
+  const list = challenges[currentLevel];
+  currentChallenge = (currentChallenge-1+list.length) % list.length;
+  loadChallenge(); resetSelects();
+}
+
+// init
+loadChallenge();
+
+/* ===========================
+   CONTACT FORM
+=========================== */
+function submitContact() {
+  const name  = document.getElementById('cfName').value.trim();
+  const email = document.getElementById('cfEmail').value.trim();
+  const type  = document.getElementById('cfType').value;
+  const msg   = document.getElementById('cfMsg').value.trim();
+  if(!name||!email||!msg) { alert('Please fill in name, email, and message.'); return; }
+  const subject = encodeURIComponent(`[Zone Theory Academy] ${type||'Enquiry'} from ${name}`);
+  const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nRequest: ${type||'—'}\n\n${msg}`);
+  window.location.href = `mailto:i97117384@gmail.com?subject=${subject}&body=${body}`;
+  document.getElementById('cfSuccess').style.display='block';
+}
+</script>
+</body>
+</html>
